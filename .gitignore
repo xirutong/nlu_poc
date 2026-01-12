@@ -1,0 +1,7 @@
+/__pycache__
+*.pyc
+/.env
+/.vscode
+.venv
+/nlu/outputs/snips_joint/checkpoint-*
+/asr/model/
