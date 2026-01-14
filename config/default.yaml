@@ -1,0 +1,11 @@
+project:
+  name: nlu_poc
+
+paths:
+  model_dir: nlu/outputs/snips_joint
+
+asr:
+  model_name: sense_voice_small
+
+nlu:
+  base_model_name: distilbert-base-uncased

@@ -6,14 +6,16 @@
 """
 
 from asr.sense_voice_small import SenseVoiceSmallRecognizer
-from nlu.scripts.predict import main as nlu_predict
+from nlu.inference.predictor import NLUModel
 
-
-# 1. 执行ASR模块
 asr_model = SenseVoiceSmallRecognizer()
-def _print_cb(text: str):
-        print(f"==============================ASR识别结果==============================")
-        print(text)   
-asr_model.start_listening(_print_cb)
+nlu_model = NLUModel()
 
-# 2. 执行NLU模块
+def asr_to_nlu_cb(text: str):
+    text = (text or "").strip()
+    if not text:
+        return
+    nlu_model.load()
+    nlu_model.predict(text)
+
+asr_model.start_listening(asr_to_nlu_cb)

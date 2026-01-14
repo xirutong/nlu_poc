@@ -3,12 +3,12 @@ import json
 import os
 import torch
 
-from src.data import get_tokenizer
-from src.model import JointIntentSlotModel
+from nlu.src.data import get_tokenizer
+from nlu.src.model import JointIntentSlotModel
 
 def main(text2predict: str):
     # 1. 配置路径：从环境变量获取 Checkpoint 路径，默认指向最后一次保存的目录
-    base_dir = "outputs/snips_joint"
+    base_dir = "nlu/outputs/snips_joint"
     checkpoints = glob.glob(os.path.join(base_dir, "checkpoint-*"))
     if not checkpoints:
         print(f"错误：在 {base_dir} 未找到任何 checkpoint 文件夹！")
@@ -68,7 +68,7 @@ def main(text2predict: str):
 
     # 8. 获取预测结果
     import json
-    mapping_path = os.path.join("outputs/snips_joint", "label_mapping.json") # 加载 label 映射
+    mapping_path = os.path.join("nlu/outputs/snips_joint", "label_mapping.json") # 加载 label 映射
     with open(mapping_path, "r", encoding="utf-8") as f:
         mapping = json.load(f)
 

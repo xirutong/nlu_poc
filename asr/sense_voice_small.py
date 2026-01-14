@@ -136,7 +136,7 @@ class SenseVoiceSmallRecognizer:
                 if text:
                     callback(text)
                     print("-" * 20)
-                    if "再见" in text:
+                    if "quit" in text:
                         print("\n检测到退出指令，停止监听。")
                         break
         except KeyboardInterrupt:

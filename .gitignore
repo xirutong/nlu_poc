@@ -1,6 +1,6 @@
 /__pycache__
 *.pyc
-/.env
+.env
 /.vscode
 .venv
 /nlu/outputs/snips_joint/checkpoint-*

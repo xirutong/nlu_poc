@@ -2,18 +2,19 @@ import glob
 import json
 import os
 from typing import Dict, List, Optional, Tuple
-
 import torch
+from settings import load_settings
+settings = load_settings()  
 
-from src.data import get_tokenizer
-from src.model import JointIntentSlotModel
+from nlu.src.data import get_tokenizer
+from nlu.src.model import JointIntentSlotModel
 
 
 class NLUModel:
     """A reusable NLU model wrapper for intent-slot prediction.
 
     Example usage:
-        model = NLUModel(base_dir="outputs/snips_joint")
+        model = NLUModel()
         model.load(device="cpu")
         res = model.predict("what is the weather like in munich tomorrow")
         print(res["intent"], res["word_slots"]) 
@@ -21,8 +22,8 @@ class NLUModel:
 
     def __init__(
         self,
-        base_dir: str = "outputs/snips_joint",
-        model_name: str = "distilbert-base-uncased",
+        base_dir: str = settings.paths.model_dir,
+        model_name: str = settings.nlu.base_model_name,
         num_intents: int = 7,
         num_slots: int = 72,
         mapping_path: Optional[str] = None,
@@ -94,7 +95,7 @@ class NLUModel:
         self.model.to(self.device)
         self.model.eval()
 
-    def predict(self, text: str, split_words: bool = True) -> Dict:
+    def predict(self, text: str, split_words: bool = True, preview: bool = True) -> Dict:
         """Predict intent and slots for `text`.
 
         Args:
@@ -158,11 +159,18 @@ class NLUModel:
             "checkpoint": self.ckpt,
         }
 
+        if preview:
+            print("===== NLU结果预览 =====")
+            print(f"\n🗣️ 识别到的文本: {text}")
+            print(f"\n🟢 预测意图: {result['intent']['name']}")
+            print(f"{'Token':<15} | {'Word_ID':<8} | {'Predict_Slot':<15}")
+            print("-" * 45)
+            for i, slot_name in enumerate(token_slots):
+                print(f"{tokens[i]:<15} | {str(word_ids[i]):<8} | {slot_name:<15}")
+
+            print("\n🔻 单词级结果")
+            print("-"*40)
+            for word, slot in word_slots:
+                print(f"单词: {word:<10} -> 标签: {slot}")
+    
         return result
-
-
-# Simple convenience function
-def predict_once(text: str, base_dir: str = "outputs/snips_joint", device: str = "cpu") -> Dict:
-    m = NLUModel(base_dir=base_dir)
-    m.load(device=device)
-    return m.predict(text)

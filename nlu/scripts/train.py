@@ -4,16 +4,18 @@ import torch
 import evaluate
 from transformers import TrainingArguments, set_seed
 import argparse
+from settings import load_settings
+settings = load_settings()
 
-from src.data import (
+from nlu.src.data import (
     load_snips_joint_dataset,
     build_label_maps,
     get_tokenizer,
     tokenize_and_align_factory,
 )
-from src.model import JointIntentSlotModel
-from src.trainer import JointTrainer, JointCollator, preprocess_logits_for_metrics
-from utils.get_training_plots import save_training_plots
+from nlu.src.model import JointIntentSlotModel
+from nlu.src.trainer import JointTrainer, JointCollator, preprocess_logits_for_metrics
+from nlu.utils.get_training_plots import save_training_plots
 
 
 def main():
@@ -23,9 +25,7 @@ def main():
     parser.add_argument("--no-plot", action="store_true", help="Disable saving training plots")
     cli_args = parser.parse_args()
 
-
-    # 从环境变量读取模型名，默认使用 DistilBERT（比 BERT 更快更轻量）
-    model_name = os.environ.get("MODEL_NAME", "distilbert-base-uncased")
+    base_model_name = settings.nlu.base_model_name
 
     # 加载 SNIPS
     train_ds, val_ds, test_ds = load_snips_joint_dataset(val_ratio=0.1, seed=42)
@@ -33,7 +33,7 @@ def main():
     # 构建 标签<->ID 的映射表。例如：'PlayMusic' -> 0, 'B-artist' -> 1
     intent2id, id2intent, slot2id, id2slot = build_label_maps(train_ds)
 
-    tokenizer = get_tokenizer(model_name)
+    tokenizer = get_tokenizer(base_model_name)
     # 这是一个工厂函数，生成的 tok_fn 会处理：
     # 1. 分词 2. 将词级标签对齐到 Subword（例如 "looking" 被切分为 "look", "##ing" 时，标签也要复制）
     tok_fn = tokenize_and_align_factory(tokenizer, intent2id, slot2id)
@@ -45,7 +45,7 @@ def main():
 
     # 初始化自定义的联合模型
     model = JointIntentSlotModel(
-        base_model_name=model_name,
+        base_model_name= base_model_name,
         num_intents=len(intent2id), # 顶层的意图分类维度
         num_slots=len(slot2id),      # 每个 Token 的槽位分类维度
         dropout=0.1,
@@ -88,7 +88,7 @@ def main():
         }
     
     args = TrainingArguments(
-        output_dir="outputs/snips_joint",
+        output_dir=settings.paths.model_dir,
         eval_strategy="epoch",    # 每个 Epoch 结束后跑一次验证集
         save_strategy="epoch",    # 每个 Epoch 结束后保存一次模型
         logging_steps=10,
