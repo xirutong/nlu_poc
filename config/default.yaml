@@ -3,6 +3,7 @@ project:
 
 paths:
   model_dir: nlu/outputs/snips_joint
+  asr_model_dir: asr/model/SenseVoiceSmall
 
 asr:
   model_name: sense_voice_small

@@ -42,6 +42,13 @@ class JointCollator:
         # 6. 将处理好的标签存入 batch 字典中返回
         batch["intent_labels"] = intent_labels
         batch["slot_labels"] = torch.tensor(padded_slot, dtype=torch.long)
+
+        # 最终 batch 里会有：
+            # input_ids: (B, L)
+            # attention_mask: (B, L)
+            # intent_labels: (B,)
+            # slot_labels: (B, L)
+        # Trainer 会把这些全部传给模型：model(**batch)
         return batch
     
 class JointTrainer(Trainer):

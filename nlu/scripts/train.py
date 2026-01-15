@@ -34,8 +34,6 @@ def main():
     intent2id, id2intent, slot2id, id2slot = build_label_maps(train_ds)
 
     tokenizer = get_tokenizer(base_model_name)
-    # 这是一个工厂函数，生成的 tok_fn 会处理：
-    # 1. 分词 2. 将词级标签对齐到 Subword（例如 "looking" 被切分为 "look", "##ing" 时，标签也要复制）
     tok_fn = tokenize_and_align_factory(tokenizer, intent2id, slot2id)
 
     # 对整个数据集进行映射处理，并移除原始文本列，只保留模型需要的 input_ids 等张量

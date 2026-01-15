@@ -3,10 +3,12 @@ import numpy as np
 from funasr import AutoModel
 from funasr.utils.postprocess_utils import rich_transcription_postprocess
 from typing import Callable, Optional
+from settings import load_settings
+settings = load_settings()  
 
 
 def load_model(
-    model_path: str = "F:/Projects/nlu_poc/model/SenseVoiceSmall",
+    model_path: str = settings.paths.asr_model_dir,
     device: str = "cuda",
     disable_update: bool = True,
 ):
@@ -33,7 +35,7 @@ class SenseVoiceSmallRecognizer:
     def __init__(
         self,
         model: Optional[AutoModel] = None,
-        model_path: str = "F:/Projects/nlu_poc/asr/model/SenseVoiceSmall",
+        model_path: str = settings.paths.asr_model_dir,
         device: str = "cuda",
         disable_update: bool = True,
         chunk: int = 1024,

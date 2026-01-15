@@ -57,7 +57,7 @@ def tokenize_and_align_factory(tokenizer, intent2id, slot2id, max_length=None):
         )
 
         # 获取每个 token 对应的原始单词索引 (word_ids)
-        # 例如: "play music" -> [None, 0, 1, None] (None 代表 [CLS] 或 [SEP])
+        # 例如: "play music" -> [None, 0 , 1, None] (None 代表 [CLS] 或 [SEP])
         word_ids = enc.word_ids()
         aligned = []
         prev = None

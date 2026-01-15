@@ -21,6 +21,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 @dataclass(frozen=True)
 class Paths:
     model_dir: Path
+    asr_model_dir: Path
 
 
 @dataclass(frozen=True)
@@ -70,6 +71,7 @@ def load_settings(
     # Paths
     # =========================
 
+    # model_dir
     model_dir_value = (
         os.environ.get("MODEL_DIR")
         or raw.get("paths", {}).get("model_dir")
@@ -81,8 +83,22 @@ def load_settings(
     model_dir = Path(model_dir_value).expanduser().resolve()
     model_dir.mkdir(parents=True, exist_ok=True)
 
+    # asr_model_dir
+    asr_model_dir_value = (
+        os.environ.get("ASR_MODEL_DIR")
+        or raw.get("paths", {}).get("asr_model_dir")
+    )
+
+    if not asr_model_dir_value:
+        raise RuntimeError("ASR_MODEL_DIR is not set (env or config)")
+
+    asr_model_dir = Path(asr_model_dir_value).expanduser().resolve()
+    asr_model_dir.mkdir(parents=True, exist_ok=True)
+
+    # Paths object
     paths = Paths(
         model_dir=model_dir,
+        asr_model_dir=asr_model_dir,
     )
 
     # =========================
