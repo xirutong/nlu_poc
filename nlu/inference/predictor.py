@@ -8,7 +8,7 @@ settings = load_settings()
 
 from nlu.src.data import get_tokenizer
 from nlu.src.model import JointIntentSlotModel
-
+from nlu.utils.get_structured_slots import bio_to_structured_slots
 
 class NLUModel:
     """A reusable NLU model wrapper for intent-slot prediction.
@@ -159,6 +159,9 @@ class NLUModel:
             "checkpoint": self.ckpt,
         }
 
+        # convert word_slots to structured format
+        structured_slots = bio_to_structured_slots(word_slots_tuple=word_slots)
+
         if preview:
             print("===== NLU结果预览 =====")
             print(f"\n🗣️ 识别到的文本: {text}")
@@ -172,5 +175,9 @@ class NLUModel:
             print("-"*40)
             for word, slot in word_slots:
                 print(f"单词: {word:<10} -> 标签: {slot}")
-    
-        return result
+
+            print("\n✅ 返回的JSON")
+            print(structured_slots)
+        
+        return structured_slots
+ 
